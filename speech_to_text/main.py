@@ -1,4 +1,5 @@
 from transcribe import transcribe
+import torch
 
 
 def main():

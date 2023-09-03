@@ -41,7 +41,7 @@ def classify_features(model, waveform):
     return emission
 
 
-def transcribe(speech_file):
+def speech_to_text(speech_file):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     bundle = torchaudio.pipelines.WAV2VEC2_ASR_BASE_960H
     model = bundle.get_model().to(device)
@@ -52,6 +52,17 @@ def transcribe(speech_file):
     emission = classify_features(model, waveform)
 
     decoder = GreedyCTCDecoder(labels=bundle.get_labels())
-    transcript = decoder(emission[0])
+    text = decoder(emission[0])
 
-    return transcript
+    return text
+
+
+def transcribe(speech_file):
+    text = speech_to_text(speech_file)
+    text = text.replace('|', ' ').lower()
+
+    model, example_texts, languages, punct, apply_te = torch.hub.load(repo_or_dir='snakers4/silero-models',
+                                                                      model='silero_te')
+    transcription = apply_te(text, lan='en')
+
+    return transcription
