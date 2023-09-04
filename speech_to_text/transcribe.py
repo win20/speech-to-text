@@ -2,6 +2,8 @@ import torch
 import torchaudio
 import matplotlib.pyplot as plt
 from greedy_ctc_decoder import GreedyCTCDecoder
+from pydub import AudioSegment
+import os
 
 
 def extract_waveform(bundle, device, speech_file):
@@ -57,7 +59,19 @@ def speech_to_text(speech_file):
     return text
 
 
+def convert_to_wav(file, destination):
+    audio = AudioSegment.from_file(file)
+    audio.export(destination, format='wav')
+
+    os.remove(file)
+
+
 def transcribe(speech_file):
+    file_root, file_extension = os.path.splitext(speech_file)
+
+    if file_extension == '.mp3':
+        convert_to_wav(speech_file, file_root + '.wav')
+
     text = speech_to_text(speech_file)
     text = text.replace('|', ' ').lower()
 

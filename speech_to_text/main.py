@@ -1,9 +1,8 @@
 from transcribe import transcribe
-import torch
 
 
 def main():
-    SPEECH_FILE = 'audio/speech_sample.ogg'
+    SPEECH_FILE = 'audio/281047.mp3'
     trancription = transcribe(SPEECH_FILE)
 
     print(trancription)
