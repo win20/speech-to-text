@@ -2,7 +2,7 @@ from transcribe import transcribe
 
 
 def main():
-    SPEECH_FILE = 'audio/281047.mp3'
+    SPEECH_FILE = 'audio/test.wav'
     trancription = transcribe(SPEECH_FILE)
 
     print(trancription)

@@ -1,12 +1,13 @@
 import torch
 import torchaudio
+# from torch import Tensor
 import matplotlib.pyplot as plt
 from greedy_ctc_decoder import GreedyCTCDecoder
 from pydub import AudioSegment
 import os
 
 
-def extract_waveform(bundle, device, speech_file):
+def extract_waveform(bundle, device, speech_file: str) -> torch.Tensor:
     """Extract waveforme and sample rate from file
 
     Args:
@@ -29,21 +30,21 @@ def extract_waveform(bundle, device, speech_file):
     return waveform
 
 
-def extract_accoustic_features(model, waveform):
+def extract_accoustic_features(model, waveform: torch.Tensor) -> torch.Tensor:
     with torch.inference_mode():
         features, _ = model.extract_features(waveform)
 
     return features
 
 
-def classify_features(model, waveform):
+def classify_features(model, waveform: torch.Tensor) -> torch.Tensor:
     with torch.inference_mode():
         emission, _ = model(waveform)
 
     return emission
 
 
-def speech_to_text(speech_file):
+def speech_to_text(speech_file: str) -> str:
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     bundle = torchaudio.pipelines.WAV2VEC2_ASR_BASE_960H
     model = bundle.get_model().to(device)
@@ -59,14 +60,14 @@ def speech_to_text(speech_file):
     return text
 
 
-def convert_to_wav(file, destination):
+def convert_to_wav(file: str, destination: str) -> None:
     audio = AudioSegment.from_file(file)
     audio.export(destination, format='wav')
 
     os.remove(file)
 
 
-def transcribe(speech_file):
+def transcribe(speech_file: str) -> str:
     file_root, file_extension = os.path.splitext(speech_file)
 
     if file_extension == '.mp3':
