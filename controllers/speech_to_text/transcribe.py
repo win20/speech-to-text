@@ -1,8 +1,7 @@
 import torch
 import torchaudio
-# from torch import Tensor
 import matplotlib.pyplot as plt
-from greedy_ctc_decoder import GreedyCTCDecoder
+from .greedy_ctc_decoder import GreedyCTCDecoder
 from pydub import AudioSegment
 import os
 
