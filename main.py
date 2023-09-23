@@ -1,24 +1,12 @@
 from fastapi import Depends, FastAPI, HTTPException, Security, Header
-from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
-from pydantic import BaseModel
+from fastapi.security import APIKeyHeader
 from typing import Annotated, List
-import MySQLdb
-
-
-# from speech_to_text.transcribe import transcribe
-
-db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'passwd': 'Candi.201099',
-    'db': 'scribe',
-}
-conn = MySQLdb.connect(**db_config)
+from database import db_connect
 
 
 app = FastAPI()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 api_key_header = APIKeyHeader(name='x-api-key')
+db = db_connect()
 
 
 def authenticate(
@@ -26,7 +14,7 @@ def authenticate(
     username: Annotated[str | None, Header()] = None,
     password: Annotated[str | None, Header()] = None
 ) -> List[str]:
-    cursor = conn.cursor()
+    cursor = db.cursor()
 
     query = """
         SELECT password, api_key
@@ -55,9 +43,10 @@ def authenticate(
 
 @app.get('/protected')
 async def protected_route(
-    test: str = Security(authenticate),
+    _: str = Security(authenticate),
 ):
-    return {'message': 'hello from protected'}
+    test = 'test'
+    return {'message': test}
 
 
 @app.get('/status')
