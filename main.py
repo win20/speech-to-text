@@ -1,7 +1,7 @@
-from fastapi import Depends, FastAPI, HTTPException, Security, status
+from fastapi import Depends, FastAPI, HTTPException, Security, Header
 from fastapi.security import APIKeyHeader, OAuth2PasswordBearer
 from pydantic import BaseModel
-from typing import Annotated
+from typing import Annotated, List
 import MySQLdb
 
 
@@ -21,31 +21,43 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 api_key_header = APIKeyHeader(name='x-api-key')
 
 
-def get_api_key(api_key_header: str = Security(api_key_header)) -> str:
+def authenticate(
+    api_key_header: str = Security(api_key_header),
+    username: Annotated[str | None, Header()] = None,
+    password: Annotated[str | None, Header()] = None
+) -> List[str]:
     cursor = conn.cursor()
-    query = "SELECT id FROM scribe.users WHERE api_key = '%s'" % api_key_header
+
+    query = """
+        SELECT password, api_key
+        FROM scribe.users
+        WHERE consumer = '%s';
+    """ % username
+
     cursor.execute(query)
 
     data = cursor.fetchone()
 
-    if data is not None:
-        return api_key_header
+    if data is None:
+        raise HTTPException(
+            status_code=404,
+            detail='Invalid or missing username'
+        )
+
+    if data[0] == password and data[1] == api_key_header:
+        return data
 
     raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail='Invalid or missing API key'
+        status_code=403,
+        detail='Invalid/missing API key or password'
     )
 
 
 @app.get('/protected')
-async def protected_route(_: str = Security(get_api_key)):
-    cursor = conn.cursor()
-    query = 'SELECT api_key FROM scribe.users WHERE id=1'
-    cursor.execute(query)
-    item = cursor.fetchone()
-
-    cursor.close()
-    return {'message': item}
+async def protected_route(
+    test: str = Security(authenticate),
+):
+    return {'message': 'hello from protected'}
 
 
 @app.get('/status')
