@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from .greedy_ctc_decoder import GreedyCTCDecoder
 from pydub import AudioSegment
 import os
+import aiofiles
+from fastapi import UploadFile, File
 
 
 def extract_waveform(bundle, device, speech_file: str) -> torch.Tensor:
@@ -80,3 +82,13 @@ def transcribe(speech_file: str) -> str:
     transcription = apply_te(text, lan='en')
 
     return transcription
+
+
+async def transcribe_from_file_upload(file: UploadFile):
+    out_file_path = './audio/audio.wav'
+
+    async with aiofiles.open(out_file_path, 'wb') as out_file:
+        while content := await file.read(1024):
+            await out_file.write(content)
+
+    return transcribe(out_file_path)
