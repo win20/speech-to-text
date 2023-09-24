@@ -1,8 +1,11 @@
-from fastapi import FastAPI, Security, Header
+import aiofiles
+from typing import Annotated
+from fastapi import FastAPI, Security, Header, File, UploadFile
 from fastapi.security import APIKeyHeader
 from database import db_connect
 from controllers.auth import authenticate
 from controllers.speech_to_text.transcribe import transcribe
+
 
 app = FastAPI()
 api_key_header = APIKeyHeader(name='x-api-key')
@@ -24,11 +27,16 @@ async def protected_route(
     return {'message': test}
 
 
-@app.get('/transcribe')
-async def root():
-    SPEECH_FILE = '../audio/test.wav'
-    trancription = transcribe(SPEECH_FILE)
+@app.post('/transcribe')
+async def root(file: UploadFile = File(...), _: str = Security(authenticate)):
+    out_file_path = './audio/audio.wav'
+
+    async with aiofiles.open(out_file_path, 'wb') as out_file:
+        while content := await file.read(1024):
+            await out_file.write(content)
+
+    transcription = transcribe(out_file_path)
 
     return {
-        'message': trancription
+        'message': transcription
     }
