@@ -6,7 +6,6 @@ from database import db_connect
 from controllers.auth import authenticate
 from controllers.speech_to_text.transcribe import transcribe_from_file_upload
 
-
 app = FastAPI()
 api_key_header = APIKeyHeader(name='x-api-key')
 db = db_connect()
@@ -19,12 +18,11 @@ async def status():
     }
 
 
-@app.get('/protected')
+@app.get('/status-protected')
 async def protected_route(
     _: str = Security(authenticate),
 ):
-    test = 'test'
-    return {'message': test}
+    return {'message': 'OK, authentification successful'}
 
 
 @app.post('/transcribe')

@@ -84,7 +84,7 @@ def transcribe(speech_file: str) -> str:
     return transcription
 
 
-async def transcribe_from_file_upload(file: UploadFile):
+async def transcribe_from_file_upload(file: UploadFile) -> str:
     out_file_path = './audio/audio.wav'
 
     async with aiofiles.open(out_file_path, 'wb') as out_file:
