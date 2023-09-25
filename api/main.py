@@ -2,7 +2,7 @@ import aiofiles
 from typing import Annotated
 from fastapi import FastAPI, Security, Header, File, UploadFile
 from fastapi.security import APIKeyHeader
-from app.database import db_connect
+from database import db_connect
 from app.controllers.auth import authenticate
 from app.controllers.speech_to_text.transcribe import transcribe_from_file_upload
 
@@ -13,8 +13,11 @@ db = db_connect()
 
 @app.get('/status')
 async def status():
+    cursor = db.cursor()
+    cursor.execute('select @@version')
+    output = cursor.fetchall()
     return {
-        'message': 'OK, server up and running.'
+        'message': output
     }
 
 
