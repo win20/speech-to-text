@@ -2,9 +2,9 @@ import aiofiles
 from typing import Annotated
 from fastapi import FastAPI, Security, Header, File, UploadFile
 from fastapi.security import APIKeyHeader
-from database import db_connect
-from app.controllers.auth import authenticate
-from app.controllers.speech_to_text.transcribe import transcribe_from_file_upload
+from controllers.database import db_connect
+from controllers.auth import authenticate
+from controllers.speech_to_text.transcribe import transcribe_from_file_upload
 
 app = FastAPI()
 api_key_header = APIKeyHeader(name='x-api-key')

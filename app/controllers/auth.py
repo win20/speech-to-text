@@ -1,7 +1,7 @@
 from fastapi import Depends, FastAPI, HTTPException, Security, Header
 from fastapi.security import APIKeyHeader
 from typing import Annotated, List
-from database import db_connect
+from .database import db_connect
 
 api_key_header = APIKeyHeader(name='x-api-key')
 db = db_connect()
