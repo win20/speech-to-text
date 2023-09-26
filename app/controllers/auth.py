@@ -30,7 +30,7 @@ def authenticate(
             detail='Invalid or missing username'
         )
 
-    if data[0] == password and data[1] == api_key_header:
+    if data['password'] == password and data['api_key'] == api_key_header:
         return data
 
     raise HTTPException(
