@@ -7,6 +7,26 @@ api_key_header = APIKeyHeader(name='x-api-key')
 db = db_connect()
 
 
+def register(username: str, password: str):
+    cursor = db.cursor()
+
+    query = """
+        SELECT consumer
+        FROM scribe.users
+        WHERE consumer = '%s';
+    """ % username
+
+    cursor.execute(query)
+    data = cursor.fetchone()
+    cursor.close()
+
+    if data is not None:
+        raise HTTPException(
+            status_code=409,
+            detail='Username already exists'
+        )
+
+
 def authenticate(
     api_key_header: str = Security(api_key_header),
     username: Annotated[str | None, Header()] = None,

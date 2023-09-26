@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import FastAPI, Security, Header, File, UploadFile
 from fastapi.security import APIKeyHeader
 from controllers.database import db_connect
-from controllers.auth import authenticate
+import controllers.auth as auth
 from controllers.speech_to_text.transcribe import transcribe_from_file_upload
 
 app = FastAPI()
@@ -21,15 +21,22 @@ async def status():
     }
 
 
+@app.post('/register')
+async def register(username: str, password: str):
+    auth.register(username, password)
+
+    return {'message': 'OK'}
+
+
 @app.get('/status-protected')
 async def protected_route(
-    _: str = Security(authenticate),
+    _: str = Security(auth.authenticate),
 ):
     return {'message': 'OK, authentification successful'}
 
 
 @app.post('/transcribe')
-async def root(file: UploadFile = File(...), _: str = Security(authenticate)):
+async def root(file: UploadFile = File(...), _: str = Security(auth.authenticate)):
     transcription = await transcribe_from_file_upload(file)
 
     return {
