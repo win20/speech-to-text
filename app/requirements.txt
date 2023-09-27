@@ -104,6 +104,7 @@ nvidia-cusolver-cu11==11.4.0.1
 nvidia-cusparse-cu11==11.7.4.91
 nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
+onnxruntime==1.16.0
 openpyxl==3.1.2
 opt-einsum==3.3.0
 packaging==23.1
@@ -111,6 +112,7 @@ paddle-bfloat==0.1.7
 paddle2onnx==1.0.8
 paddleaudio==1.0.2
 paddlefsl==1.1.0
+paddlenlp==2.3.1
 paddlepaddle==2.5.1
 paddlespeech==1.0.1
 paddlespeech-feat==0.1.0
