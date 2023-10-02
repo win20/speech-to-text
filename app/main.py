@@ -1,4 +1,3 @@
-import aiofiles
 from typing import Annotated
 from fastapi import FastAPI, Security, Header, File, UploadFile
 from fastapi.security import APIKeyHeader
