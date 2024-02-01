@@ -16,10 +16,12 @@ async def status():
     cursor.execute('select @@version')
     output = cursor.fetchall()
     return {
+        'status': 'OK',
         'message': output
     }
 
 
+# TODO: needs to use header params instead of normal params
 @app.post('/register')
 async def register(username: str, password: str):
     auth.register(username, password)
