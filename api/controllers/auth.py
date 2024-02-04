@@ -1,23 +1,30 @@
+import secrets
 from fastapi import Depends, FastAPI, HTTPException, Security, Header
 from fastapi.security import APIKeyHeader
 from typing import Annotated, List
-from .database import query_get
+from models.user import SignUpRequestModel
+from .database import query_get, query_put
 
 api_key_header = APIKeyHeader(name='x-api-key')
 
 
-def register(username: str, password: str):
-    user = query_get("""
-        SELECT id, consumer
-        FROM consumer
-        WHERE consumer = %s
-    """, (username))
+def register(user_model: SignUpRequestModel) -> str:
+    result = get_user_info_by_username(user_model.username)
 
-    if len(user) != 0:
+    if len(result) != 0:
         raise HTTPException(
             status_code=409,
             detail='Username already exists'
         )
+
+    api_key = secrets.token_urlsafe(16)
+
+    query_put("""
+        INSERT INTO consumer (consumer, password, api_key)
+        VALUES (%s, %s, %s)
+    """, (user_model.username, user_model.password, api_key))
+
+    return api_key
 
 
 def authenticate(
