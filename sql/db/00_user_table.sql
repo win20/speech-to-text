@@ -1,4 +1,4 @@
-CREATE TABLE `users` (
+CREATE TABLE `consumer` (
   `id` int AUTO_INCREMENT NOT NULL,
   `consumer` varchar(50) NOT NULL,
   `password` varchar(50) NOT NULL,
